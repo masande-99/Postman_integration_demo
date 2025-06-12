@@ -1,0 +1,6732 @@
+{
+	"info": {
+		"_postman_id": "28301626-8a3f2339-d40c-43e3-8655-87507f819d54",
+		"name": "DA-Staging",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"TOKEN\", pm.response.json().access_token)",
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Content-Type header is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Success field is present in the response\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.have.property('success');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Access token and refresh token are not empty\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.access_token).to.exist.and.to.not.be.empty;",
+							"    pm.expect(responseData.refresh_token).to.exist.and.to.not.be.empty;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Access token and refresh token are in the correct format\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData).to.be.an('object');",
+							"  pm.expect(responseData.access_token).to.be.a('string');",
+							"  pm.expect(responseData.refresh_token).to.be.a('string');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "28301626-3be65d46-5fef-49a4-b155-14cf44ec239d",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"password\": {{password}},\n    \"username\": {{username}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/login",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/removevehicle",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Content type is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Success field is present and has a truthy value\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.have.property('success');",
+							"    pm.expect(responseData.success).to.be.a('boolean').and.to.be.true;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Msg field should exist and be an object\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.msg).to.exist.and.to.be.an('object');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Verify the 'Removed vehicle from whitelist' message is present and has a non-negative value\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.msg).to.be.an('object');",
+							"    pm.expect(responseData.msg[\"Removed vehicle from whitelist\"]).to.exist.and.to.be.at.least(0);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "28301626-1638d2d3-a006-40c7-9b7b-7eeea8db6547",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"known_vehicle_list_id\": 8,\n    \"plate\": \"CA 345 22\",\n    \"make\": \"BMW\",\n    \"colour\": \"Orange\", \n    \"year\": 2023,\n    \"vehicle_type\": \"f30\",\n    \"country_code\": \"ZA\",\n    \"image_url\": \"image1.jpeg\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/removevehicle",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"removevehicle"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/listwhitelist",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "61af61b4-6e2c-47fa-aca5-c0cdaef895f1",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202, 200]);",
+							"});",
+							"",
+							"pm.test(\"Check known_vehicle_list_id\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.msg.known_vehicle_list[0].known_vehicle_list_id).to.eql(51);",
+							"});",
+							"",
+							"pm.test(\"Check whitelist name\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.msg.known_vehicle_list[0].name).to.eql(\"default_whitelist\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-4ca9574e-b88d-42bb-943a-f42cc30ac4a9",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_id\": 831\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/listwhitelist",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"listwhitelist"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/createwhitelist",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "96de4b02-1dba-4a71-8430-cab360eb2e1b",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 20, 200]);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Body matches string\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"Created whitelist\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-4e41c98b-7900-471d-a9be-03645a48f49f",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_id\": 831,\n    \"name\": \"Parking lot{{site_id}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/createwhitelist",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"createwhitelist"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/whitelistvehicle",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "dd87ac5b-cdfc-4880-8cb9-d7506d78c172",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202, 200]);",
+							"});",
+							"",
+							"pm.test(\"Your test name\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-1fe897e5-e9bb-4c0d-b732-2e042cbff74c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"known_vehicle_list_id\": 51,\n    \"plate\": \"CA 345 22\",\n    \"make\": \"BMW\",\n    \"model\": \"X5\",\n    \"colour\": \"Orange\", \n    \"year\": 2023,\n    \"vehicle_type\": \"f30\",\n    \"country_code\": \"ZA\",\n    \"image_url\": \"image1.jpeg\",\n    \"vehicle coordinates\": \"000.333.55.3\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/whitelistvehicle",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"whitelistvehicle"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/server_multi_snapshot",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Content-Type header is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Success field is present and has a boolean value\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData).to.have.property('success').that.is.a('boolean');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Reference images field is present and is an array\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.reference_images).to.be.an('array');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Verify that the reference_images array is empty\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData.reference_images).to.be.an('array').that.is.empty;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "28301626-2bff24de-1d00-47b7-aba8-2195351612d5",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"max_count\": 5,\n    \"sensor_id\": 582,\n    \"start_time_filter\": 1674398400.0,\n    \"end_time_filter\": 1738732800.0\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/server_multi_snapshot?",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"server_multi_snapshot"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/fetch_ajax_status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b00c951e-392f-4728-bd82-56bc795e8024",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Success field should be true\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData.success).to.be.true;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Verify hub_status object contains required fields\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData.hub_status).to.be.an('object');",
+							"    pm.expect(responseData.hub_status.subtype).to.exist;",
+							"    pm.expect(responseData.hub_status.name).to.exist;",
+							"    pm.expect(responseData.hub_status.id).to.exist;",
+							"    pm.expect(responseData.hub_status.state).to.exist;",
+							"    pm.expect(responseData.hub_status.tampered).to.exist;",
+							"    pm.expect(responseData.hub_status.externally_powered).to.exist;",
+							"    pm.expect(responseData.hub_status.firmware).to.exist;",
+							"    pm.expect(responseData.hub_status.battery).to.exist;",
+							"    pm.expect(responseData.hub_status.malfunctions).to.exist;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Device statuses array is present and contains at least one element\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.device_statuses).to.exist.and.to.be.an('array').that.is.not.empty;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Each device_statuses object contains required fields\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.device_statuses).to.be.an('array').that.is.not.empty;",
+							"    ",
+							"    responseData.device_statuses.forEach(function(device) {",
+							"        pm.expect(device).to.have.property('name').that.is.a('string');",
+							"        pm.expect(device).to.have.property('sensor_id_str').that.is.a('string');",
+							"        pm.expect(device).to.have.property('arm_state').that.is.a('string');",
+							"        pm.expect(device).to.have.property('battery').that.is.a('number');",
+							"        pm.expect(device).to.have.property('malfunctions').that.is.an('array');",
+							"        pm.expect(device).to.have.property('online').that.is.a('boolean');",
+							"",
+							"        // Allow tampered to be either a boolean or null",
+							"        pm.expect(device).to.have.property('tampered').that.satisfy(val => val === null || typeof val === \"boolean\");",
+							"",
+							"        pm.expect(device).to.have.property('message').that.is.a('string');",
+							"    });",
+							"});",
+							"",
+							"",
+							"",
+							"pm.test(\"Response time is within acceptable range\", function () {",
+							"  pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-fddb2d96-2119-437c-a079-9ae2b46bb7ef",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_id\": 1019,\n    \"ajax_hub_id\": \"00208221\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/fetch_ajax_status",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"fetch_ajax_status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/manage_ajax_arm",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3539ae59-8c81-477d-8cee-f87ce652c647",
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Content-Type is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Success field should exist and be a boolean\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData).to.be.an('object');",
+							"  pm.expect(responseData.success).to.exist.and.to.be.a('boolean');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Ensure the 'msg' field is string\", function () {",
+							"  const responseData = pm.response.json();",
+							"  ",
+							"  pm.expect(responseData.msg).to.be.a(\"string\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"  pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-fd8e419d-27d6-4e57-9ac5-e005f6adcc2f",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_id\": 1019,\n    \"ajax_hub_id\": \"00208221\",\n    \"status\": \"ARM\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/manage_ajax_arm",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"manage_ajax_arm"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/dashboard_stats",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202, 200]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 10000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(10000);",
+							"});",
+							"",
+							"pm.test(\"Body matches string\", function () {",
+							"    pm.expect(pm.response.text()).to.include",
+							"    (\"enabled_org_ids\", \"total_inferences\", \"total_alerts\", \"total_events\", \"total_enabled_sensors\", \"total_events\", \"total_enabled_sites\", \"total_enabled_orgs\", \"total_new_sites\", \"total_sites_disabled\", \"total_new_sensors\", \"total_sensors_disabled\", \"alert_site_dict\", \"alert_sensor_list\", \"org_alert_site_dict\", \"alert_activity_asc\", \"alert_activity_desc\", \"org_alert_activity_asc\", \"org_alert_activity_desc\", \"disabled_sites\", \"new_sites\", \"disabled_sensors\", \"new_sensors\", \"rule_subtype_camera_count\", \"\");",
+							"});",
+							"",
+							"pm.test(\"Success equals true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check enabled orgs\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.enabled_org_list[1].enabled).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check disabled sites\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.disabled_sites[0].enabled).to.eql(false);",
+							"});",
+							"",
+							"pm.test(\"Check enabled org id(s)\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.enabled_org_ids).to.contain(1513, 1116);",
+							"});",
+							"",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"",
+							"pm.test(\"Check total enabled orgs is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.total_enabled_orgs).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"pm.test(\"Check total enabled sites is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.total_enabled_sites).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"pm.test(\"Check total enabled sensors is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.total_enabled_sensors).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"pm.test(\"Check total events is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.total_events).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"pm.test(\"Check total alerts is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.total_alerts).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"pm.test(\"Check total inferences is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.total_inferences).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"pm.test(\"Check enabled org ids is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.enabled_org_ids).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"pm.test(\"Check enabled org list is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.enabled_org_list).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"pm.test(\"Check total_new_sites is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.total_new_sites).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"pm.test(\"Check total_sites_disabled is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.total_sites_disabled).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"pm.test(\"Check total_new_sensors is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.total_new_sensors).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"pm.test(\"Check alert_site_dict is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.alert_site_dict).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"pm.test(\"Check alert_sensor_list is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.alert_sensor_list).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"pm.test(\"Check org_alert_site_dict is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.org_alert_site_dict).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"pm.test(\"Check alert_activity_asc is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.alert_activity_asc).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"pm.test(\"Check alert_activity_desc is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.alert_activity_desc).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"pm.test(\"Check org_alert_activity_asc is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.org_alert_activity_asc).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"pm.test(\"Check org_alert_activity_desc is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.org_alert_activity_desc).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"pm.test(\"Check disabled_sites is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.disabled_sites).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"pm.test(\"Check new_sites is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.new_sites).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"pm.test(\"Check disabled_sensors is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.disabled_sensors).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"pm.test(\"Check new_sensors is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.new_sensors).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"pm.test(\"Check rule_subtype_camera_count is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.rule_subtype_camera_count).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-4f4a3c4a-6a24-41d9-b6f2-9aa1676ff0ec",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"top_org_id\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/dashboard_stats",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"dashboard_stats"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/no_activity",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202, 200]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 10000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(10000);",
+							"});",
+							"",
+							"pm.test(\"Body matches string\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"no_inferences_sites\", \"no_inferences_site_count\", \"no_alerts_sites\", \"no_alerts_site_count\");",
+							"});",
+							"",
+							"pm.test(\"Success equals true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check no_inferences_sites is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.no_inferences_sites).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"pm.test(\"Check no_inferences_site_count is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.no_inferences_site_count).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"pm.test(\"Check no_alerts_sites is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.no_alerts_sites).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"pm.test(\"Check no_alerts_site_count is not null, undefined, [] or empty string\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.no_alerts_site_count).to.not.contain([null, undefined, [], \"\"]);",
+							"});",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-b4d48edb-d6e4-4fdf-9080-13cf70e92af0",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"top_org_id\": 1,\n    \"analysis_type\": \"both\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/no_activity",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"no_activity"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/list_billing_rates",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202, 200]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 10000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(10000);",
+							"});",
+							"",
+							"pm.test(\"Success equals true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Request method is POST\", function () {",
+							"    pm.expect(pm.request.method).to.eql(\"POST\");",
+							"});",
+							"",
+							"pm.test(\"Response contains 20 items\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates).to.have.lengthOf(20);",
+							"});",
+							"",
+							"pm.test(\"Confirm id for DeepAlert Connect: AJAX Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[0].id).to.equal(35);",
+							"});",
+							"",
+							"pm.test(\"Confirm name for DeepAlert Connect: AJAX Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[0].public_product_name).to.equal(\"DeepAlert Connect: AJAX Intruder\");",
+							"});",
+							"",
+							"pm.test(\"Confirm id for DeepAlert Premium: AJAX Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[1].id).to.equal(36);",
+							"});",
+							"",
+							"pm.test(\"Confirm name for DeepAlert Premium: AJAX Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[1].public_product_name).to.equal(\"DeepAlert Premium: AJAX Intruder\");",
+							"});",
+							"",
+							"pm.test(\"Confirm id for DeepAlert Inference: DeepAPI\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[2].id).to.equal(37);",
+							"});",
+							"",
+							"pm.test(\"Confirm name for DeepAlert Inference: DeepAPI\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[2].public_product_name).to.equal(\"DeepAlert Inference: DeepAPI\");",
+							"});",
+							"",
+							"pm.test(\"Confirm id for DeepAlert Hub Lite\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[3].id).to.equal(42);",
+							"});",
+							"",
+							"pm.test(\"Confirm name for DeepAlert Hub Lite\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[3].public_product_name).to.equal(\"DeepAlert Hub Lite\");",
+							"});",
+							"",
+							"pm.test(\"Confirm id for DeepAlert Milestone: Post-Receipt Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[4].id).to.equal(34);",
+							"});",
+							"",
+							"pm.test(\"Confirm name for DeepAlert Milestone: Post-Receipt Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[4].public_product_name).to.equal(\"DeepAlert Milestone: Post-Receipt Intruder\");",
+							"});",
+							"",
+							"pm.test(\"Confirm id for DeepAlert Connect: EdgePlus Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[5].id).to.equal(11);",
+							"});",
+							"",
+							"pm.test(\"Confirm name for DeepAlert Connect: EdgePlus Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[5].public_product_name).to.equal(\"DeepAlert Connect: EdgePlus Intruder\");",
+							"});",
+							"",
+							"pm.test(\"Confirm id for DeepAlert Premium: EdgePlus Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[6].id).to.equal(10);",
+							"});",
+							"",
+							"pm.test(\"Confirm name for DeepAlert Premium: EdgePlus Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[6].public_product_name).to.equal(\"DeepAlert Premium: EdgePlus Intruder\");",
+							"});",
+							"",
+							"pm.test(\"Confirm id for DeepAlert Premium: EdgePlus Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[7].id).to.equal(29);",
+							"});",
+							"",
+							"pm.test(\"Confirm name for DeepAlert Premium: EdgePlus Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[7].public_product_name).to.equal(\"DeepAlert Premium: EdgePlus Intruder\");",
+							"});",
+							"",
+							"pm.test(\"Confirm id for DeepAlert Connect: Frontel Panel Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[8].id).to.equal(33);",
+							"});",
+							"",
+							"pm.test(\"Confirm name for DeepAlert Premium: EdgePlus Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[8].public_product_name).to.equal(\"DeepAlert Connect: Frontel Panel Intruder\");",
+							"});",
+							"",
+							"pm.test(\"DeepAlert Connect: Frontel Panel Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[8].id).to.equal(33);",
+							"});",
+							"",
+							"pm.test(\"Confirm name for DeepAlert Premium: EdgePlus Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[8].public_product_name).to.equal(\"DeepAlert Connect: Frontel Panel Intruder\");",
+							"});",
+							"",
+							"pm.test(\"Confirm id for DeepAlert Premium: Frontel Panel Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[9].id).to.equal(32);",
+							"});",
+							"",
+							"pm.test(\"Confirm name for DeepAlert Premium: Frontel Panel Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[9].public_product_name).to.equal(\"DeepAlert Premium: Frontel Panel Intruder\");",
+							"});",
+							"",
+							"pm.test(\"Confirm id for Deepalert Immix: Post-Receipt Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[10].id).to.equal(31);",
+							"});",
+							"",
+							"pm.test(\"Confirm name for Deepalert Immix: Post-Receipt Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[10].public_product_name).to.equal(\"Deepalert Immix: Post-Receipt Intruder\");",
+							"});",
+							"",
+							"pm.test(\"Confirm id for DeepAlert Connect: Hub Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[11].id).to.equal(28);",
+							"});",
+							"",
+							"pm.test(\"Confirm name for DeepAlert Connect: Hub Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[11].public_product_name).to.equal(\"DeepAlert Connect: Hub Intruder\");",
+							"});",
+							"",
+							"pm.test(\"Confirm id for DeepAlert Premium: Hub Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[12].id).to.equal(27);",
+							"});",
+							"",
+							"pm.test(\"Confirm name for DeepAlert Premium: Hub Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[12].public_product_name).to.equal(\"DeepAlert Premium: Hub Intruder\");",
+							"});",
+							"",
+							"pm.test(\"Confirm id for DeepAlert Premium: Hub Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[14].id).to.equal(15);",
+							"});",
+							"",
+							"pm.test(\"Confirm name for DeepAlert Premium: Hub Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[14].public_product_name).to.equal(\"DeepAlert Premium: Hub Intruder\");",
+							"});",
+							"",
+							"pm.test(\"Confirm id for DeepAlert Premium: Hub Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[14].id).to.equal(15);",
+							"});",
+							"",
+							"pm.test(\"Confirm name for DeepAlert Premium: Hub Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[14].public_product_name).to.equal(\"DeepAlert Premium: Hub Intruder\");",
+							"});",
+							"",
+							"pm.test(\"Confirm id for DeepAlert Connect: Hub Multi-Class\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[16].id).to.equal(2);",
+							"});",
+							"",
+							"pm.test(\"Confirm name for DeepAlert Connect: Hub Multi-Class\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[15].public_product_name).to.equal(\"DeepAlert Connect: Hub Multi-Class\");",
+							"});",
+							"",
+							"pm.test(\"Confirm id for DeepAlert Premium: Hub Multi-Class\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[15].id).to.equal(1);",
+							"});",
+							"",
+							"pm.test(\"Confirm name for DeepAlert Premium: Hub Multi-Class\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[16].public_product_name).to.equal(\"DeepAlert Premium: Hub Multi-Class\");",
+							"});",
+							"",
+							"pm.test(\"Confirm id for DeepAlert Sentinel: Post-Receipt Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[18].id).to.equal(12);",
+							"});",
+							"",
+							"pm.test(\"Confirm name for DeepAlert Sentinel: Post-Receipt Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[18].public_product_name).to.equal(\"DeepAlert Sentinel: Post-Receipt Intruder\");",
+							"});",
+							"",
+							"pm.test(\"Confirm id for DeepAlert Sentinel: Post-Receipt Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[19].id).to.equal(30);",
+							"});",
+							"",
+							"pm.test(\"Confirm name for DeepAlert Sentinel: Post-Receipt Intruder\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.billing_rates[19].public_product_name).to.equal(\"DeepAlert Sentinel: Post-Receipt Intruder\");",
+							"});",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-0e5ea813-7856-49a6-9948-dd34df10c8d0",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{DA_URL}}/list_billing_rates",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"list_billing_rates"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/list_org_billing_rates",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202, 200]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 10000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(10000);",
+							"});",
+							"",
+							"pm.test(\"Success equals true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check DeepAlert Premium: EdgePlus Intruder id\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.org_billing_rates[2].id).to.eql(11);",
+							"});",
+							"",
+							"pm.test(\"Check DeepAlert Premium: EdgePlus Intruder public_product_name\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.org_billing_rates[2].public_product_name).to.eql(\"DeepAlert Premium: EdgePlus Intruder\");",
+							"});",
+							"",
+							"pm.test(\"Check DeepAlert Premium: Hub Intruder id\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.org_billing_rates[4].id).to.eql(35);",
+							"});",
+							"",
+							"pm.test(\"Check DeepAlert Premium: Hub Intruder public_product_name\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.org_billing_rates[4].public_product_name).to.eql(\"DeepAlert Premium: Hub Intruder\");",
+							"});",
+							"",
+							"pm.test(\"Check DeepAlert Premium: Frontel Panel Intruder id\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.org_billing_rates[5].id).to.eql(43);",
+							"});",
+							"",
+							"pm.test(\"Check DeepAlert Premium: Frontel Panel Intruder public_product_name\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.org_billing_rates[5].public_product_name).to.eql(\"DeepAlert Premium: Frontel Panel Intruder\");",
+							"});",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-b4cb1f1e-c4ac-4d13-a32e-895bbf4039c3",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"org_id\":1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/list_org_billing_rates",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"list_org_billing_rates"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/org_tree",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202, 200]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 10000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(10000);",
+							"});",
+							"",
+							"pm.test(\"Success equals true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Validate org_name\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.tree.orgs[\"1146\"].org_name).to.eql(\"MasandeTest\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-657cb97d-bf6a-4d60-b00d-8f85079b67c4",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"top_org_id\":1146\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/org_tree",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"org_tree"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/list_orgs",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202, 200]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 10000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(10000);",
+							"});",
+							"",
+							"pm.test(\"Success equals true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Success equals true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-0fa56c8c-43f1-4707-8919-1ba59f85e0a6",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"top_org_id\":1146\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/list_orgs",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"list_orgs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/org_tree_totals",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202, 200]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success equals true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"var template = `",
+							"<style type=\"text/css\">",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}",
+							"    .tftable tr {background-color:#ffffff;}",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}",
+							"    .tftable tr:hover {background-color:#e0ffff;}",
+							"</style>",
+							"",
+							"<table class=\"tftable\" border=\"1\">",
+							"    <tr>",
+							"        <th>Org ID</th>",
+							"        <th>Org Name</th>",
+							"    </tr>",
+							"    ",
+							"    {{#each response.tree.orgs}}",
+							"        <tr id=row_{{@key}}>",
+							"            <td>{{@key}}</td>",
+							"            <td>{{org_name}}</td>",
+							"        </tr>",
+							"        {{#if this.orgs}}",
+							"            {{#each this.orgs}}",
+							"                <tr id=row_{{@key}}>",
+							"                    <td>{{@key}}</td>",
+							"                    <td>{{org_name}}</td>",
+							"                </tr>",
+							"            {{/each}}",
+							"        {{/if}}",
+							"    {{/each}}",
+							"</table>",
+							"`;",
+							"",
+							"function constructVisualizerPayload() {",
+							"    var res = pm.response.json();",
+							"",
+							"    return {response: res};",
+							"}",
+							"",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-dd60ea58-a464-4123-9c50-28bf7a955b7b",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"top_org_id\":1146\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/org_tree_totals",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"org_tree_totals"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/list_entry_orgs",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202, 200]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success equals true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"var template = `",
+							"<style type=\"text/css\">",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}",
+							"    .tftable tr {background-color:#ffffff;}",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}",
+							"    .tftable tr:hover {background-color:#e0ffff;}",
+							"</style>",
+							"",
+							"<table class=\"tftable\" border=\"1\">",
+							"    <tr>",
+							"        <th>Org ID</th>",
+							"        <th>Org Name</th>",
+							"    </tr>",
+							"    ",
+							"    {{#each response.tree.orgs}}",
+							"        <tr id=row_{{@key}}>",
+							"            <td>{{@key}}</td>",
+							"            <td>{{org_name}}</td>",
+							"        </tr>",
+							"        {{#if this.orgs}}",
+							"            {{#each this.orgs}}",
+							"                <tr id=row_{{@key}}>",
+							"                    <td>{{@key}}</td>",
+							"                    <td>{{org_name}}</td>",
+							"                </tr>",
+							"            {{/each}}",
+							"        {{/if}}",
+							"    {{/each}}",
+							"</table>",
+							"`;",
+							"",
+							"function constructVisualizerPayload() {",
+							"    var res = pm.response.json();",
+							"",
+							"    return {response: res};",
+							"}",
+							"",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-e9ac3a0d-2077-45bf-98c7-40c8e451437c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"top_org_id\":1146\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/list_entry_orgs",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"list_entry_orgs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/fetch_org_logo(thumbnail)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202, 200]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success equals true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"var template = `",
+							"<style type=\"text/css\">",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}",
+							"    .tftable tr {background-color:#ffffff;}",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}",
+							"    .tftable tr:hover {background-color:#e0ffff;}",
+							"</style>",
+							"",
+							"<table class=\"tftable\" border=\"1\">",
+							"    <tr>",
+							"        <th>Org ID</th>",
+							"        <th>Org Name</th>",
+							"    </tr>",
+							"    ",
+							"    {{#each response.tree.orgs}}",
+							"        <tr id=row_{{@key}}>",
+							"            <td>{{@key}}</td>",
+							"            <td>{{org_name}}</td>",
+							"        </tr>",
+							"        {{#if this.orgs}}",
+							"            {{#each this.orgs}}",
+							"                <tr id=row_{{@key}}>",
+							"                    <td>{{@key}}</td>",
+							"                    <td>{{org_name}}</td>",
+							"                </tr>",
+							"            {{/each}}",
+							"        {{/if}}",
+							"    {{/each}}",
+							"</table>",
+							"`;",
+							"",
+							"function constructVisualizerPayload() {",
+							"    var res = pm.response.json();",
+							"",
+							"    return {response: res};",
+							"}",
+							"",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-fd5a64f6-efca-437c-939c-3f742dc779c5",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"org_id\":1146,\n    \"image_type\": \"thumbnail\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/fetch_org_logo",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"fetch_org_logo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/fetch_org_logo(report_image)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202, 200]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success equals true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"var template = `",
+							"<style type=\"text/css\">",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}",
+							"    .tftable tr {background-color:#ffffff;}",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}",
+							"    .tftable tr:hover {background-color:#e0ffff;}",
+							"</style>",
+							"",
+							"<table class=\"tftable\" border=\"1\">",
+							"    <tr>",
+							"        <th>Org ID</th>",
+							"        <th>Org Name</th>",
+							"    </tr>",
+							"    ",
+							"    {{#each response.tree.orgs}}",
+							"        <tr id=row_{{@key}}>",
+							"            <td>{{@key}}</td>",
+							"            <td>{{org_name}}</td>",
+							"        </tr>",
+							"        {{#if this.orgs}}",
+							"            {{#each this.orgs}}",
+							"                <tr id=row_{{@key}}>",
+							"                    <td>{{@key}}</td>",
+							"                    <td>{{org_name}}</td>",
+							"                </tr>",
+							"            {{/each}}",
+							"        {{/if}}",
+							"    {{/each}}",
+							"</table>",
+							"`;",
+							"",
+							"function constructVisualizerPayload() {",
+							"    var res = pm.response.json();",
+							"",
+							"    return {response: res};",
+							"}",
+							"",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-4fbf7182-9664-4293-865a-f026470aba59",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"org_id\":1146,\n    \"image_type\": \"report_image\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/fetch_org_logo",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"fetch_org_logo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/list_users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202, 200]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success equals true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"var template = `",
+							"<style type=\"text/css\">",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}",
+							"    .tftable tr {background-color:#ffffff;}",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}",
+							"    .tftable tr:hover {background-color:#e0ffff;}",
+							"</style>",
+							"",
+							"<table class=\"tftable\" border=\"1\">",
+							"    <tr>",
+							"        <th>Org ID</th>",
+							"        <th>Org Name</th>",
+							"    </tr>",
+							"    ",
+							"    {{#each response.tree.orgs}}",
+							"        <tr id=row_{{@key}}>",
+							"            <td>{{@key}}</td>",
+							"            <td>{{org_name}}</td>",
+							"        </tr>",
+							"        {{#if this.orgs}}",
+							"            {{#each this.orgs}}",
+							"                <tr id=row_{{@key}}>",
+							"                    <td>{{@key}}</td>",
+							"                    <td>{{org_name}}</td>",
+							"                </tr>",
+							"            {{/each}}",
+							"        {{/if}}",
+							"    {{/each}}",
+							"</table>",
+							"`;",
+							"",
+							"function constructVisualizerPayload() {",
+							"    var res = pm.response.json();",
+							"",
+							"    return {response: res};",
+							"}",
+							"",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-bb9185e9-fba3-483e-9fde-fc9553ef7e3d",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"top_org_id\":1146,\n    \"order_by\":\"username\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/list_users",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"list_users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/list_entry_points",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202, 200]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success equals true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"var template = `",
+							"<style type=\"text/css\">",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}",
+							"    .tftable tr {background-color:#ffffff;}",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}",
+							"    .tftable tr:hover {background-color:#e0ffff;}",
+							"</style>",
+							"",
+							"<table class=\"tftable\" border=\"1\">",
+							"    <tr>",
+							"        <th>Org ID</th>",
+							"        <th>Org Name</th>",
+							"    </tr>",
+							"    ",
+							"    {{#each response.tree.orgs}}",
+							"        <tr id=row_{{@key}}>",
+							"            <td>{{@key}}</td>",
+							"            <td>{{org_name}}</td>",
+							"        </tr>",
+							"        {{#if this.orgs}}",
+							"            {{#each this.orgs}}",
+							"                <tr id=row_{{@key}}>",
+							"                    <td>{{@key}}</td>",
+							"                    <td>{{org_name}}</td>",
+							"                </tr>",
+							"            {{/each}}",
+							"        {{/if}}",
+							"    {{/each}}",
+							"</table>",
+							"`;",
+							"",
+							"function constructVisualizerPayload() {",
+							"    var res = pm.response.json();",
+							"",
+							"    return {response: res};",
+							"}",
+							"",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-826a8be0-43ac-4564-93e2-e5af4156696b",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user_id\":1940\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/list_entry_points",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"list_entry_points"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/list_roles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202, 200]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success equals true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"var template = `",
+							"<style type=\"text/css\">",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}",
+							"    .tftable tr {background-color:#ffffff;}",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}",
+							"    .tftable tr:hover {background-color:#e0ffff;}",
+							"</style>",
+							"",
+							"<table class=\"tftable\" border=\"1\">",
+							"    <tr>",
+							"        <th>Org ID</th>",
+							"        <th>Org Name</th>",
+							"    </tr>",
+							"    ",
+							"    {{#each response.tree.orgs}}",
+							"        <tr id=row_{{@key}}>",
+							"            <td>{{@key}}</td>",
+							"            <td>{{org_name}}</td>",
+							"        </tr>",
+							"        {{#if this.orgs}}",
+							"            {{#each this.orgs}}",
+							"                <tr id=row_{{@key}}>",
+							"                    <td>{{@key}}</td>",
+							"                    <td>{{org_name}}</td>",
+							"                </tr>",
+							"            {{/each}}",
+							"        {{/if}}",
+							"    {{/each}}",
+							"</table>",
+							"`;",
+							"",
+							"function constructVisualizerPayload() {",
+							"    var res = pm.response.json();",
+							"",
+							"    return {response: res};",
+							"}",
+							"",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-c94486dc-58c9-4292-8aba-a3575e36b42b",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{DA_URL}}/list_roles",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"list_roles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/list_site_products",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202, 200]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success equals true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"var template = `",
+							"<style type=\"text/css\">",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}",
+							"    .tftable tr {background-color:#ffffff;}",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}",
+							"    .tftable tr:hover {background-color:#e0ffff;}",
+							"</style>",
+							"",
+							"<table class=\"tftable\" border=\"1\">",
+							"    <tr>",
+							"        <th>Org ID</th>",
+							"        <th>Org Name</th>",
+							"    </tr>",
+							"    ",
+							"    {{#each response.tree.orgs}}",
+							"        <tr id=row_{{@key}}>",
+							"            <td>{{@key}}</td>",
+							"            <td>{{org_name}}</td>",
+							"        </tr>",
+							"        {{#if this.orgs}}",
+							"            {{#each this.orgs}}",
+							"                <tr id=row_{{@key}}>",
+							"                    <td>{{@key}}</td>",
+							"                    <td>{{org_name}}</td>",
+							"                </tr>",
+							"            {{/each}}",
+							"        {{/if}}",
+							"    {{/each}}",
+							"</table>",
+							"`;",
+							"",
+							"function constructVisualizerPayload() {",
+							"    var res = pm.response.json();",
+							"",
+							"    return {response: res};",
+							"}",
+							"",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-8d18c9e6-c865-4c90-a347-ffa6fb6b1336",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"top_org_id\":1146\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/list_site_products",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"list_site_products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/list_sites",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202, 200]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success equals true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-98c11df5-67fd-4597-a15f-76aedef49afe",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"top_org_id\":986\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/list_sites",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"list_sites"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/list_frontel_site_status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202, 200]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success equals true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-89663a9b-0892-4fa9-a18e-6a87feb5387e",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"top_org_id\":1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/list_frontel_site_status",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"list_frontel_site_status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/manage_site(add_site)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202, 200]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 3000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+							"});",
+							"",
+							"pm.test(\"Success equals true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Body matches string\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"added\");",
+							"});",
+							"",
+							"pm.environment.set(\"site_id\", pm.response.json().site_id)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-f86767d0-9b53-455f-a90b-c667c523ce44",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"org_id\":1247,\n    \"site_name\":\"Safe Shelter\",\n    \"org_billing_rate_id\":35,\n    \"enabled\":true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/manage_site",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"manage_site"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/manage_site(update_site)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202, 200]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 3000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+							"});",
+							"",
+							"pm.test(\"Success equals true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Body matches string\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"updated\");",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-45030712-35bc-45a0-8800-5da130a4bc19",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_id\":{{site_id}},\n    \"site_name\":\"Safe Guarders\",\n    \"org_billing_rate_id\":35,\n    \"enabled\":true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/manage_site",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"manage_site"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/move_site",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202, 200]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 3000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+							"});",
+							"",
+							"pm.test(\"Success equals true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Body matches string\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"updated\");",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-d01f5635-1bd1-4ff1-a417-349acfa020e5",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_id\":{{site_id}},\n    \"org_id\":\"1254\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/move_site",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"move_site"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/manage_site(delete_site)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202, 200]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 3000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+							"});",
+							"",
+							"pm.test(\"Success equals true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Body matches string\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"deleted\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-017f393d-d2c9-4394-b367-ebe958e6d3d8",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_id\":{{site_id}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/manage_site",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"manage_site"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/site_data_origin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202, 200]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 3000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+							"});",
+							"",
+							"pm.test(\"Success equals true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Body matches string\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"alert_smtp_client\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-0408a807-e283-4446-8dd1-29793334e68a",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_id\":831\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/site_data_origin",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"site_data_origin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/list_hubs",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202, 200]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 3000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+							"});",
+							"",
+							"pm.test(\"Success equals true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check response is not null or undefined\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.hubs).to.not.eql([null, undefined]);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-5849f225-ae63-4d0a-912b-d0ba8619cfdd",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{DA_URL}}/list_hubs",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"list_hubs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Unsuccessful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([400, 500, 401]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 3000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+							"});",
+							"",
+							"pm.test(\"Success is undefined\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(undefined);",
+							"});",
+							"",
+							"pm.test(\"Check response is not null or undefined\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.hubs).to.not.eql([null, undefined]);",
+							"});",
+							"",
+							"pm.test(\"Body matches string\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"Missing required parameter in the JSON body or the post body or the query string\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-f1e373ec-64cc-418d-baf1-e7a16c75c933",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"hub_id_str\": \"TSLAELQUO\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/advanced_testing",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"advanced_testing"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/list_sensors",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 3000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+							"});",
+							"",
+							"pm.test(\"Success is undefined\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check response is not null or undefined\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.hubs).to.not.eql([null, undefined]);",
+							"});",
+							"",
+							"pm.test(\"Body matches string\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"device name:IPC mac: 14-0f-3a-a3-30-d2\");",
+							"});",
+							"",
+							"pm.test(\"Check sensor_id_str\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.sensors[0].sensor_id_str).to.eql(\"TSLWIFGAY-a\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-6c5544f1-dcb6-414c-a588-7d61af51b561",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_id\": 1399\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/list_sensors",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"list_sensors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/list_sensors(get snapshot)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 3000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+							"});",
+							"",
+							"pm.test(\"Success is undefined\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check response is not null or undefined\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.hubs).to.not.eql([null, undefined]);",
+							"});",
+							"",
+							"pm.test(\"Body matches string\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"This is a street residential scene.\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-113cdf0d-d8ce-48c6-a549-e1325f670643",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"sensor_id\": 389\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/list_sensors",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"list_sensors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/manage_sensor(add_sensor)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 3000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+							"});",
+							"",
+							"pm.test(\"Success is undefined\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check response is not null or undefined\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.hubs).to.not.eql([null, undefined]);",
+							"});",
+							"",
+							"pm.test(\"Body matches string\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"This is a street residential scene.\");",
+							"});",
+							"",
+							"pm.environment.set(\"sensor_id\", pm.response.json().sensor_id)",
+							"pm.environment.set(\"sensor_id_str\", pm.response.json().sensor_id_str)",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-da6a0db8-ed97-4cf2-8b2e-2a7001fc3417",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_id\": 1108,\n    \"sensor_suffix_letters\": \"IPC mac1\",\n    \"enabled\": true,\n    \"human_name\": \"IPC mac: 14-0f-3a-a3-60-d2\",\n    \"environment\": \"residential - exterior\",\n    \"ptz\": false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/manage_sensor",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"manage_sensor"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/manage_sensor_enabled",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 3000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check response is not null or undefined\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.hubs).to.not.eql([null, undefined]);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-c8fd9521-3da5-4b69-8701-b43bea24bb0d",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"sensor_id\": {{sensor_id}},\n    \"enabled\": \"true\",\n    \"reason\": \"QA Testing\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/manage_sensor_enabled",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"manage_sensor_enabled"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/manage_sensor(delete_sensor)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 3000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+							"});",
+							"",
+							"pm.test(\"Success is undefined\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check response is not null or undefined\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.hubs).to.not.eql([null, undefined]);",
+							"});",
+							"",
+							"pm.test(\"Body matches string\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"This is a street residential scene.\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-7dae5630-d2bc-467c-9175-7f46463cb852",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"sensor_id\": {{sensor_id}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/manage_sensor",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"manage_sensor"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/set_hd",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 3000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+							"});",
+							"",
+							"pm.test(\"Success is undefined\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check response is not null or undefined\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.hubs).to.not.eql([null, undefined]);",
+							"});",
+							"",
+							"pm.test(\"Body matches string\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"This is a street residential scene.\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-93885e97-84fc-4b44-abf9-fdd625c0a29b",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"sensor_id\": 2161,\n    \"hd_toggle\": \"HD\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/set_hd",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"set_hd"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/set_hd(VGA)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 3000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+							"});",
+							"",
+							"pm.test(\"Success is undefined\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check response is not null or undefined\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.hubs).to.not.eql([null, undefined]);",
+							"});",
+							"",
+							"pm.test(\"Body matches string\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"This is a street residential scene.\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-8ddbfa25-0527-41eb-8162-d7c66a47c586",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"sensor_id\": 2161,\n    \"hd_toggle\": \"VGA\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/set_hd",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"set_hd"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/fetch_advanced_alert_zones",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 3000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+							"});",
+							"",
+							"pm.test(\"Success is undefined\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check response is not null or undefined\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.hubs).to.not.eql([null, undefined]);",
+							"});",
+							"",
+							"pm.test(\"Body matches string\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"advanced_alert_zones\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-0b2fb5ae-1bb3-4a10-a004-ffd5f7f120da",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"sensor_id\": 2161\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/fetch_advanced_alert_zones",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"fetch_advanced_alert_zones"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/list_smtp_emails",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 3000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+							"});",
+							"",
+							"pm.test(\"Success is undefined\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check response is not null or undefined\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.hubs).to.not.eql([null, undefined]);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-8f54f546-2943-49e2-ab2c-20ce112b5d38",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_ids\": [150, 203, 1434]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/list_smtp_emails",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"list_smtp_emails"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/server_snapshot",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 3000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+							"});",
+							"",
+							"pm.test(\"Success is undefined\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check response is not null or undefined\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.hubs).to.not.eql([null, undefined]);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-6b59b5b3-1a58-46e4-9ae2-7bbd93528f61",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"sensor_id\": 389\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/server_snapshot",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"server_snapshot"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/server_multi_snapshot",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 10000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(10000);",
+							"});",
+							"",
+							"pm.test(\"Success is undefined\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check response is not null or undefined\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.hubs).to.not.eql([null, undefined]);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-2ada365b-09b4-48ec-ab02-7ea4c7e0dbd6",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"sensor_id\": 389\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/server_multi_snapshot",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"server_multi_snapshot"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/fetch_time_zone",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 10000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(10000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check timezone_str\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.timezone_str).to.eql(\"Africa/Johannesburg\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-c8b9d35c-76bd-4608-9ed4-af48aec71116",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_id\": 203\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/fetch_time_zone",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"fetch_time_zone"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/list_alert_channels",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 10000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(10000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check timezone_str\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.alert_channels[7].name).to.eql(\"QA Automation Testing EdgePlus Alerts\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-c5259b17-b7ba-4ccf-b4a2-1b3a197c67f8",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"top_org_id\": 1146\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/list_alert_channels",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"list_alert_channels"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/manage_alert_channel",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Unsuccessful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([401, 400, 402]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 10000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(10000);",
+							"});",
+							"",
+							"pm.test(\"Success is false\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(false);",
+							"});",
+							"",
+							"pm.test(\"Check timezone_str\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.msg).to.eql( \"a ruleset already exists for the site - cannot add an additional one\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-4e40ac64-be7a-4a95-a41b-ab73d0c12e93",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"alert_channel_name\": \"Postman API testing\",\n    \"timezone_str\":  \"Africa/Johannesburg\",\n    \"locale\": \"en_ZA\",\n    \"site_id\": 831\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/manage_alert_channel",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"manage_alert_channel"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/list_alert_config",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 1500ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1500);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check alert_config_id\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.alert_configs[0].alert_config_id).to.eql(4125);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-85cd601b-e6bd-49e5-97f2-d479791b86c3",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"alert_channel_id\": 788\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/list_alert_config",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"list_alert_config"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/sensor_defined_rule_defs",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 1500ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1500);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check alert_config_id\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.rule_defs[0].meta.create).to.eql(true);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-93ac9bb0-f334-4371-a5ee-49d78dd0710b",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_id\": 150\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/sensor_defined_rule_defs",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"sensor_defined_rule_defs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/site_default_rule_defs",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 1200ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1200);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check alert_config_id\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.rule_defs[0].meta.create).to.eql(true);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-8084b5c0-8fbb-45ed-a534-c621e7301f48",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_id\": 150\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/site_default_rule_defs",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"site_default_rule_defs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/org_default_rule_defs",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 1200ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1200);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check alert_config_id\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.rule_defs[0].meta.create).to.eql(true);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-61cb1334-0255-4103-a2a1-dd1b9b21ae55",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"org_id\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/org_default_rule_defs",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"org_default_rule_defs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/list_sensor_rules",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check site_id\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.alert_configs[0].site_id).to.eql(831);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-17f76d8a-9f0c-49c6-b661-9b1f7d83aaaf",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"sensor_id\": 2161\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/list_sensor_rules",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"list_sensor_rules"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/manage_sensor_rules",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check site_id\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.msg).to.eql(\"advanced alert config rule added to alert channel (id=788) by user masande@deepalert.ai (id=1922)\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-61aac191-ef60-4392-a5f6-d43a0cac784b",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"sensor_id\": 2161,\n    \"rule\": {\n                \"alert_type\": \"scheduled\",\n                \"rule_type\": \"alert_zones_and_counts\",\n                \"rule_subtype\": \"GuardManagementNoGuard\",\n                \"rule_name\": \"ALERT ZONES AND COUNTS 4327\",\n                \"cadence_secs\": 1800,\n                \"valid_days_and_times\": \"[(\\\"Mon,Tue,Wed,Thu,Fri,Sat,Sun\\\", \\\"00:00:00-24:00:00\\\")]\",\n                \"zone_configs\": [\n                    {\n                        \"zone\": \"full_image\"\n                    }\n                ]\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/manage_sensor_rules",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"manage_sensor_rules"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/fetch_nearest_default_rules",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 3100ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(3100);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check site_name\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.default_rules.rules_origin.site_name).to.eql(\"A top-Secret Guardians\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-5fd0bae8-1b42-4101-9c47-436f918bba6f",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_id\": 831\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/fetch_nearest_default_rules",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"fetch_nearest_default_rules"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/update_default_rules",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 3100ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(3100);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check site_name\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.default_rules.rules_origin.site_name).to.eql(\"A top-Secret Guardians\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-f7a3b533-2c6b-4cc2-939a-d3f9d99e2d22",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_id\": 831,\n    \"rule\": {\n                \"alert_type\": \"analytics\",\n                \"rule_type\": \"alert_zones\",\n                \"rule_subtype\": \"AlertZones\",\n                \"rule_name\": \"ALERT ZONES1\",\n                \"valid_days_and_times\": \"[(\\\"Mon,Tue,Wed,Thu,Fri,Sat,Sun\\\", \\\"00:00:00-24:00:00\\\")]\",\n                \"zone_configs\": [\n                    {\n                        \"zone\": \"full_image\",\n                        \"class_label\": \"human1.people\",\n                        \"object_motion\": \"include_all\",\n                        \"confidence_threshold\": 35\n                    },\n                    {\n                        \"zone\": \"full_image\",\n                        \"class_label\": \"human1.vehicles\",\n                        \"object_motion\": \"include_all\",\n                        \"confidence_threshold\": 50\n                    }\n                ]\n    }\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/update_default_rules",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"update_default_rules"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/list_rules_for_site",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 20000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(20000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check sensor_id_str\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.rules[0][0].sensor_id_str).to.eql(\"TSLHPIIFA-c\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-c3667f9c-0db3-4097-9f2f-cc6b16fa1893",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_id\": 831\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/list_rules_for_site",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"list_rules_for_site"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/list_sites_and_arm_statuses",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 20000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(20000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check manual_arm status\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.sites[0].manual_arm).to.eql(true);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-b3bdb2e5-993d-4ce8-8a92-5c009215ffc2",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"top_org_id\": 1146,\n    \"top_org_only\": false\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/list_sites_and_arm_statuses",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"list_sites_and_arm_statuses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/site_sensor_arm_control",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 20000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(20000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check manual_arm status\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.msg).to.eql(\"sensors updated for arming\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-108ac0f6-d7e8-47e4-8b16-67e8f6d4979f",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_ids\": \"[1399]\",\n    \"sensor_id\": 2700,\n    \"action\": \"mute\",\n    \"mute_mins\": 15\n\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/site_sensor_arm_control",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"site_sensor_arm_control"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/site_sensor_mute_and_arm_status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 20000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(20000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check status\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"armed\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-a080a6d8-0d4e-4531-aca0-8b5a6ad07b48",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_ids\": \"[1399]\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/site_sensor_mute_and_arm_status",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"site_sensor_mute_and_arm_status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/list_end_points",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 20000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(20000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check alert endpoint name\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.alert_endpoints[0].name).to.eql(\"Alert Web Interface1698748050044\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-a5b45bf5-ffe8-4770-8fee-e395348574b6",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"alert_channel_ids\": 788\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/list_end_points",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"list_end_points"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/manage_end_point",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 20000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(20000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"pm.test(\"Body matches string\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"added by user\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-843c51ad-7fe8-47b3-93e4-deccd36c66d1",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"alert_channel_id\": 788,\n    \"end_point_type\": \"immix\",\n    \"name\": \"immix_endpoint\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/manage_end_point",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"manage_end_point"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/create_listener_number",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Body contains device_number\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"device_num\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-c6edfad4-1355-4122-80cd-3f644652e3d2",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_id\": 831\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/create_listener_number",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"create_listener_number"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/list_hikcentral_entities",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Body contains device_number\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"device_num\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-d47d8d40-376e-433c-a99d-2acaa47ff68e",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"alert_channel_end_point_id\": 2371,\n    \"entity_type\": \"site\",\n    \"pageNo\": 1,\n    \"pageSize\":0\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/list_hikcentral_entities",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"list_hikcentral_entities"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/configure_hikcentral_rules",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Body contains device_number\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"device_num\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-181d6eef-0b68-475f-b7e9-60fb3147814f",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"alert_channel_end_point_id\": 2371\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/configure_hikcentral_rules",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"configure_hikcentral_rules"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/web_roles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Your test name\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.web_roles[0] & jsonData.web_roles[1] & jsonData.web_roles[2] & jsonData.web_roles[3] & jsonData.web_roles[4] & jsonData.web_roles[5] & jsonData.web_roles[6]).to.eql(\"web_alerts\" & \"web_mute_controls\" & \"web_alert_history\" & \"web_alert_escalations\" & \"web_alert_camera_filter\" & \"web_bulk_actions\" & \"web_mute_one_hour\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-21f1d95e-bbb7-4195-85bb-20cc6f6863b7",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{DA_URL}}/web_roles",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"web_roles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/user_web_roles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Your test name\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.web_roles[0] & jsonData.web_roles[1] & jsonData.web_roles[2] & jsonData.web_roles[3] & jsonData.web_roles[4] & jsonData.web_roles[5] & jsonData.web_roles[6]).to.eql(\"web_alerts\" & \"web_mute_controls\" & \"web_alert_history\" & \"web_alert_escalations\" & \"web_alert_camera_filter\" & \"web_bulk_actions\" & \"web_mute_one_hour\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-b1c317b8-7fc9-431e-8296-632bc3a7d489",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user_id\": \"1\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/user_web_roles",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"user_web_roles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/user_web_orgs",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Your test name\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.org_ids[0]).to.eql(1);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-19fa3f0e-0a84-4ddb-af19-a0bdc68e51c9",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user_id\": 2038\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/user_web_orgs",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"user_web_orgs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/user_web_channels",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-78e8d1b6-f983-4895-a7ac-1d5ccb82bf2b",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user_id\": 2038,\n    \"top_org_id\":1146\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/user_web_channels",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"user_web_channels"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/org_web_channels",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-75493ac6-e125-413c-9a35-ae7d846dfd19",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user_id\": 2038,\n    \"top_org_id\":1146\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/org_web_channels",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"org_web_channels"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/web_end_point_users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-ed644477-e487-42bf-ba20-869f1263a81b",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"alert_channel_endpoitn_id\": 788\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/web_end_point_users",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"web_end_point_users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/inference_token_from_login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-c4b48de5-508d-461a-87b5-e5354831dbd4",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"password\": {{password}},\n    \"username\": {{username}},\n    \"site_id\" : 1226\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/inference_token_from_login",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"inference_token_from_login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/inference_token_from_jwt",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-6274ce80-2879-4db7-8c2b-941e7a9ea470",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_id\" : 831\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/inference_token_from_jwt",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"inference_token_from_jwt"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/edge_enhanced_smtp (generate_password=true)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-62e00a7f-d1d1-4ebb-8eab-0da458375959",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_id\" : 831\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/edge_enhanced_smtp",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"edge_enhanced_smtp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/site_health",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check hub_id\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.msg.sites[0].hubs[0].hub_id).to.eql(809);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-c6fe4474-94ac-421e-ba10-b71498d811b6",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_id\" : 831\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/site_health",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"site_health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/site_health_history",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Check for 'Stronghold' text in site_name within the response body\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    var siteNames = jsonData.site_list.map(site => site.site_name);",
+							"    pm.expect(siteNames.join()).to.include('Stronghold Security');",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-b261fc56-a283-4090-bf7f-630880037f38",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"top_org_id\" : 1146\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/site_health_history",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"site_health_history"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/site_health_detail",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-24e82a72-8498-40dd-ae92-92dbbd2d545c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_id\" : 150\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/site_health_detail",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"site_health_detail"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/site_health_timeline",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-8ebdc577-563c-4e2d-b0a2-1e64b19b2abb",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_ids\" : \"[150]\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/site_health_timeline",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"site_health_timeline"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/analytics_activity",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-9821a53c-98ab-40d8-a7ce-42c274f21c2c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_id\" : 150\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/analytics_activity",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"analytics_activity"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/event_counts_v3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-5a3529d6-d6b5-4ce3-ba39-3d4f2e13332c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"event_type\": \"all_events\",\n    \"site_ids\" : \"[150]\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/event_counts_v3",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"event_counts_v3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/events_v3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"let responseData = pm.response.json();",
+							"let docIds = [];",
+							"",
+							"responseData.data.forEach(entry => {",
+							"    if (entry.event_data && entry.event_data.doc_id) {",
+							"        docIds.push(entry.event_data.doc_id);",
+							"    }",
+							"    if (entry.alerts) {",
+							"        entry.alerts.forEach(alert => {",
+							"            if (alert.doc_id) docIds.push(alert.doc_id);",
+							"        });",
+							"    }",
+							"    if (entry.inferences) {",
+							"        entry.inferences.forEach(inference => {",
+							"            if (inference.doc_id) docIds.push(inference.doc_id);",
+							"        });",
+							"    }",
+							"});",
+							"",
+							"pm.environment.set(\"doc_ids\", docIds.join(\",\"));",
+							"console.log(\"Extracted doc_ids:\", docIds.join(\",\"));",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-3dc1fa55-cbad-4306-9d3e-68b6aee99b15",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"event_type\": \"alerted_events\",\n    \"site_ids\" : \"[150]\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/events_v3",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"events_v3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/rule_eval_explanation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-c9768754-8d8d-4e13-98ef-71bf66429dba",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"event_doc_id\": \"HQAZFJUBQaMRWO-hWEtb\",\n    \"alert_config_id\" : 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/rule_eval_explanation",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"rule_eval_explanation"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/flagged_image_counts",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-8813d0e5-944d-4b7c-9660-94bf32b2297a",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_ids\": \"[831, 203]\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/flagged_image_counts",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"flagged_image_counts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/flagged_images_v3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-702f1229-35dc-4bc5-bc44-6e0bf7d00c08",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_ids\": \"831, 203\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/flagged_images_v3",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"flagged_images_v3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/alerts",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"",
+							"//The doc ids are not validated"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-5c77d22d-a957-416c-919a-1f899390a1ae",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"alert_ids\": \"[TSTAAAB-p_20250325_073411.523801_2X898I4P6ue7jHxS_track_0, KKU5zJUBhWQD-FNHLJ8B]\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/alerts",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"alerts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/suppressed_alert_counts",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"",
+							"//The doc ids are not validated"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-fa1d2728-bee3-46ba-85b0-a20ae52e83c0",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_ids\": \"[831, 203]\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/suppressed_alert_counts",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"suppressed_alert_counts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/review_suppressed_alerts",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"",
+							"//The doc ids are not validated"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-b69c95ac-cc82-4ebc-b35a-88626f42673b",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"site_ids\": \"831, 203\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/review_suppressed_alerts",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"review_suppressed_alerts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/suppress_alert",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"",
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-30a57ea0-1333-4288-bd32-bc0f062fa6b0",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"doc_ids\": \"{{doc_ids}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/suppress_alert",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"suppress_alert"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/unusual_activity",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d33a47a-8ef3-4f4d-9e3c-cff3e9fca45a",
+						"exec": [
+							"",
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200, 202]);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Success is true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "28301626-4c608cb6-e2ca-420b-bdc2-c725063c0417",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"top_org_id\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DA_URL}}/unusual_activity",
+					"host": [
+						"{{DA_URL}}"
+					],
+					"path": [
+						"unusual_activity"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
