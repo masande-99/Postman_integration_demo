@@ -53,6 +53,5 @@ jobs:
         if: always()
         run: |
           curl -X POST -H 'Content-type: application/json' \
-          --data '{"text": "✅ Postman Test Report completed!\nView & download report: https://github.com/masande-99/Postman_integration_demo/actions/runs/${{ github.run_id }}/artifacts"}' \
+          --data '{"text": "✅ Postman Test Report completed!\nDownload HTML report: ${{ steps.get_artifact.outputs.artifact_url }}"}' \
           ${{ secrets.SLACK_WEBHOOK_URL }}
-
