@@ -11,6 +11,7 @@
 				{
 					"listen": "test",
 					"script": {
+						"id": "4075085d-5dea-43cc-8364-90fb1a8d38df",
 						"exec": [
 							"pm.environment.set(\"TOKEN\", pm.response.json().access_token)",
 							"pm.test(\"Response status code is 200\", function () {",
@@ -23,7 +24,7 @@
 							"});",
 							"",
 							"",
-							"pm.test(\"Success field is present in the response\", function () {",
+							"pm.test(\"Success field is present within the response\", function () {",
 							"    const responseData = pm.response.json();",
 							"    ",
 							"    pm.expect(responseData).to.have.property('success');",
@@ -46,7 +47,8 @@
 							"  pm.expect(responseData.refresh_token).to.be.a('string');",
 							"});"
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
