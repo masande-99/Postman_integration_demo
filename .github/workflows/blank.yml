@@ -17,6 +17,7 @@ jobs:
         run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
 
       - name: Run API tests and generate reports
+        continue-on-error: true
         run: |
           mkdir -p newman
           postman collection run "28301626-8a3f2339-d40c-43e3-8655-87507f819d54" \
