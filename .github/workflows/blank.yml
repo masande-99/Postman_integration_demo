@@ -26,13 +26,13 @@ jobs:
             --reporter-junit-export newman/junit-report.xml
 
       - name: Upload HTML Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: postman-html-report
           path: newman/html-report.html
-
+    
       - name: Upload JUnit Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: postman-junit-report
           path: newman/junit-report.xml
