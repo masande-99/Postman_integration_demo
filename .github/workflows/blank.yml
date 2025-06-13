@@ -37,3 +37,11 @@ jobs:
         with:
           name: postman-junit-report
           path: newman/junit-report.xml
+
+      - name: Send report link to Slack
+        if: always()
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+          --data '{"text": "✅ Postman Test Report completed!\nView & download report: https://github.com/masande-99/Postman_integration_demo/actions/runs/${{ github.run_id }}/artifacts"}' \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
+
